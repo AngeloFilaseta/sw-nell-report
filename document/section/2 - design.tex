@@ -23,7 +23,7 @@ L'Architettura di NELL si basa su una knowledge base condivisa ed utilizzata da 
 
 I componenti presenti sono i seguenti:
 \begin{itemize}
-    \item \textbf{Knowledge Base}: Si tratta della base di dati condivisa in cui i fatti di interesse possono essere di due tipi:
+    \item \textbf{Knowledge Base(KB)}: Si tratta della base di dati condivisa in cui i fatti di interesse possono essere di due tipi:
     \begin{itemize}
         \item \textbf{Fatti candidati (Candidate Facts)}: Un fatto che si ritiene possa essere vero.
         \item \textbf{Credenze (Beliefs)}: Un fatto che viene considerato corretto a fronte di una decisione da parte del Knowledge Integrator.
@@ -47,4 +47,13 @@ I componenti presenti sono i seguenti:
 L'iterazione di EM alterna l'esecuzione di un passo chiamato expectation (E), che crea una funzione per il valore atteso della log-likelihood calcolata usando la stima dei parametri corrente, e un passo detto maximization (M), che calcola nuove stime dei parametri massimizzando la funzione di log-likelihood attesa trovata al passo appena descritto\cite{AlgoritmEM:online}.
 \end{info}
 
+\subsubsection{Principi di design}
+Al fine di poter utilizzare l'approccio e l'architettura appena descritto sono necessarie alcune accortezze sul design, al fine di far funzionare tutto nel modo più efficace possibile:
+\begin{itemize}
+    \item ogni \textit{Subsystem component} deve commettere errori che non sono correlati tra loro. Questo significa utilizzare un approccio molto diverso in ogni componente. Quando molti componenti commettono lo stesso errore (non correlato) la probabilità che tutti quanti hanno commesso tutti lo stesso errore è il prodotto della probabilità dei singoli errori. Utilizzando metodi diversi, anche la modalità con cui vengono trovati gli errori cambia. In questo modo la probabilità di trovare degli effettivi errori cala drasticamente;
+    \item sono necessari diversi punti di accesso da cui acquisire conoscenza. Per esempio un componente estrae fatti da risorse testuali, mentre un altro impara attraverso l'inferenza partendo da relazioni presenti della KB;
+    \item un modo per distinguere credenze che hanno una alta veridicibilità da quelli che risultano più incerti. Avere informazioni ulteriori sui motivi di tale classificazione aiuterebbe ulteriormente l'algoritm a migliorarsi;
+    \item è necessaria una rappresentazione standard per i fatti e le relazioni della KB. In questo modo risulterà anche più facile per il KI classificare i fatti candidati;
+    \item utilizzare metodi di apprendimento semi-supervisionato per sfruttare vincoli tra predicati già acquisiti. Per fornire più opportunità si organizzano in una tassonomia le categorie e le relazioni che sono state già classificate in modo corretto\cite{AlgoritmEM:online}.
+\end{itemize}
 \newpage
