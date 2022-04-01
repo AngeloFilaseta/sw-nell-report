@@ -4,7 +4,7 @@
 I dati che sono stati forniti a NELL alla sua prima computazione sono stati i seguenti:
 \begin{itemize}
     \item un'ontologia inziale, contenente circa qualche centinaio di categorie(tra cui \textit{persone}, \textit{team sportivi}, \textit{frutta}, \textit{emozioni}) e di relazioni(\textit{giocaNelTeam(atleta, team)}, \textit{suonaStrumento(musicista, strumentoMusicale)};
-    \item circa 10 o 15 esempi di seed per ogni categoria o relazione;
+    \item circa 10 o 15 esempi di seed per ogni categoria o relazione (per esempio una dozzina di istanze di città, di fiori, etc.);
     \item una collezione di circa 500 milioni di pagine web da cui estrapolare le informazioni;
     \begin{info}
         Anche se vengono fornite delle pagine di esempio, parte dell'algoritmo di NELL contiene anche indicazioni su come raggiungere autonomamente altre pagine web.
@@ -16,5 +16,35 @@ I dati che sono stati forniti a NELL alla sua prima computazione sono stati i se
     \item \textbf{estrazione di nuove istanze di categorie o relazioni}: in altre parole si cercano nuovi soggetti che possano essere legati ad una categoria già presente(es: "Barack Obama" è sia una \underline{persona} che un \underline{politico}) o due nuovi soggetti legati da una relazione già presente (es: "Taylor Swift" \underline{si è esibita} al "Levi's Stadium"). Questi fatti vengono quindi aggiunti alla knowledge base.
     \item \textbf{impara a leggere meglio di ieri}: NELL utilizza diversi metodi per estrarre informazioni dal web. Tutti gli algoritmi utilizzati subiscono un processo di training continuo utilizzando anche i nuovi dati trovati. Il metodo di apprendimento utilizzato da NELL è semi-supervisionato. Il suo successo è dovuto principalmente al continuo addestramento sui dati da parte di tutti gli algoritmi utilizzati per identificare fatti\cite{ReadtheWebOverview:online}.
 \end{enumerate}
+
+\subsection{Architettura}
+L'Architettura di NELL si basa su una knowledge base condivisa ed utilizzata da diversi componenti denominati \textit{Subsystem Components} che vi effettuano sopra operazioni di lettura e scrittura. 
+\centeredImage{img/architecture.png}{Architettura di NELL\cite{TowardAnArchitecture:online}}{0.6}
+
+I componenti presenti sono i seguenti:
+\begin{itemize}
+    \item \textbf{Knowledge Base}: Si tratta della base di dati condivisa in cui i fatti di interesse possono essere di due tipi:
+    \begin{itemize}
+        \item \textbf{Fatti candidati (Candidate Facts)}: Un fatto che si ritiene possa essere vero.
+        \item \textbf{Credenze (Beliefs)}: Un fatto che viene considerato corretto a fronte di una decisione da parte del Knowledge Integrator.
+    \end{itemize}
+    \item \textbf{Subsystem Components}: si tratta di componenti che possono leggere dalla knowledge base e consultare altre risorse esterne per proporre nuovi fatti candidati.
+    Quando un componente propone un fatto canditato fornisce anche un valore di probabilità che corrisponde alla veridicità dell'informazione, corredato da motivi e dati aggiuntivi per meglio approfondire la causa.
+    \item \textbf{Knowledge Integrator(KI)}: il componente che esamina i fatti candidati e promuove a credenze gli elementi più accreditati.
+\end{itemize}
+
+\noindent Non fanno parte del sistema anche se vengono utilizzati i \textbf{Data Resources} ovvero dei dati esterni utilizzati dai componenti per proporre nuovi fatti candidati. Per ogni iterazione che effettua il sistema, ogni componente termina la sua esecuzione usando la knowledge base di quel determinato periodo temporale, dopodiché il KI effettua le decisioni su quale fatto candidato promuovere a credenza.
+
+\centeredImage{img/state.png}{Diagramma degli stati - Iterazioni}{0.6}
+
+\noindent La knowledge base cresce iterazione dopo iterazione, e le nuove credenze generate vengono poi utilizzare dai componenti per effettuare un nuovo processo di training. Questo approccio è molto simile all'algoritmo di expectation–maximization (EM) in cui:
+\begin{itemize}
+    \item lo step \textit{E} crea la funzione per stimare il valore di verità per una grande quantità di "credenze candidate" della knowledge base;
+    \item lo step \textit{M} effettua il training per massimizzare la funzione creata al passo precedente\cite{TowardAnArchitecture:online}.
+\end{itemize}
+
+\begin{info}[Algoritmo EM]
+L'iterazione di EM alterna l'esecuzione di un passo chiamato expectation (E), che crea una funzione per il valore atteso della log-likelihood calcolata usando la stima dei parametri corrente, e un passo detto maximization (M), che calcola nuove stime dei parametri massimizzando la funzione di log-likelihood attesa trovata al passo appena descritto\cite{AlgoritmEM:online}.
+\end{info}
 
 \newpage
