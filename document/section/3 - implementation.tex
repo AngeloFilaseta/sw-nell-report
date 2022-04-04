@@ -6,7 +6,7 @@ I quattro componenti utilizzati da NELL hanno tutti come obiettivo comune l'iden
 	\item \textbf{Coupled Pattern Learner (CPL)}: Un componente che si occupa di estrazione del testo, utilizzando pattern testuali come "maggiore di X" o "X gioca in Y" per estrarre istanze di categorie e relazioni. Utilizza un algoritmo di Machine Learning che accoppia il learning semi-supervisionato di categorie e relazioni. Approcci più tradizionali non riescono a classificare in modo efficace i dati quando la differenza di cardinalità tra dati etichettati e non etichettati è elevata.
 	CPL utilizza statistiche di occorrenza tra i sostantivi e alcuni pattern (grazie al PoS tagging) per imparare pattern di estrazione per ogni predicato di interesse. Vengono poi utilizzati gli stessi pattern per trovare nuovi predicati.
 	Anche l'utilizzo di relazioni tra i predicati vengono utilizzate per una migliore valutazione complessiva.
-	Le probabilità di ogni fatto candidato estratto da questo componente vengono calcolate utilizzando la formula $1 - 0.5^{c}$ dove $c$ è il numero di pattern che hanno estratto il candidato.
+	Le probabilità di ogni fatto candidato estratto da questo componente vengono calcolate utilizzando la formula $1 - 0.5^{c}$ dove $c$ è il numero di pattern che hanno estratto il candidato\cite{TowardAnArchitecture:online}.
 	\begin{info}[PoS tagging]
 		Il Part of Speech Tagging, anche chiamato tagging grammaticale, è il processo di marcatura ed etichettatura di una parola in un testo come corrispondente a una parte particolare del discorso, basata sia sulla sua definizione che sul suo contesto\cite{POStagsa85:online}.
 	\end{info}
@@ -28,7 +28,19 @@ while(true) {
 }
 \end{minted}
 \end{code}
-\item \textbf{Coupled SEAL (CSEAL)}: Un componente che interroga Internet avendo a disposizione come punto di partenza  un insieme di credenze. Per ogni categoria o relazione di interesse, CSEAL crea strutture dati (liste e tabelle) per trovare nuove istanze del predicato corrispondente.
+\item \textbf{Coupled SEAL (CSEAL)}: Un componente che interroga Internet avendo a disposizione come punto di partenza  un insieme di credenze. Per ogni categoria o relazione di interesse, CSEAL crea strutture dati (liste e tabelle) da cui estrapola informazioni per trovare nuove istanze del predicato corrispondente. CSEAL è stato configurato per eseguire 5 query per ogni categoria e 10 query per ogni relazione, utilizzando 50 pagine web diverse per ogni query.
+Le probabilità di ogni fatto candidato estratto da questo componente vengono calcolate utilizzando la stessa formula di CPL dove $c$ è il numero di "wrapper" che hanno individuato l'istanza \cite{TowardAnArchitecture:online}.
+\item \textbf{Coupled Morphological Classifier (CMC)}: Un componente composto da un insieme di modelli di regressione logistica con regolarizzazione $L_{2}$ (uno per categoria). In questo caso i sostantivi vengono classificati grazie a feature morfologiche (struttura delle parole, PoS etc.). Le credenze della KB vengono utilizzate come istanze di training, ma ad ogni iterazione CMC utilizza solo predicati che hanno almeno 100 istanze che sono state promosse.
+CMC esamina anche fatti candidati proposti dagli altri componenti, e riesce a classificare sempre almeno 30 nuove credenze per predicato ogni iterazione\cite{TowardAnArchitecture:online}.
+\begin{info}[Regressione logistica]
+Si tratta di un modello di regressione dove la variabile dipendente è dicotomica, ossia una variabile che può avere come unici valori 0 e 1 o riconducibili ad essi. Sostanzialmente il modello calcola la probabilità che questa variabile acquisisca valore 1 \cite{Modellol35:online}.
+\end{info}
+\centeredImage{img/logistic.png}{Esempio di funzione del modello logistico cite{Modellol35:online}}{0.2}
+
+\begin{info}[Regolarizzazione L2]
+	Il problema che si vuole risolvere è quello dell'overfitting.\newline Anche chiamata Ridge Regression, la regolarizzazione L2 è analoga alla L1, con la differenza che si utilizza la somma dei quadrati dei pesi, invece della sola somma \cite{DeepLear11:online}.
+\end{info}
 \end{itemize}
+
 
 \newpage
