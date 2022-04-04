@@ -1,5 +1,31 @@
 \section{Implementazione}
 \label{impl}
+\subsection{Knowledge Base (KB)}
+La Knowledge Base in NELL è una re-implementazione di THEO basata su Tokyo Cabinet. La Knowledge Base riesce a gestire milioni di valori su una singola macchina mantenendo le performance costanti prima di aver necessità di scalare\cite{TowardAnArchitecture:online}.
+\subsubsection{THEO}
+\cite{theofram80:online}
+\subsubsection{Tokyo Cabinet}
+
+\begin{warn}
+	Tokyo Cabinet è ormai abbastanza datata. Nel frattempo è stata distributa Tkrzw, una libreria nata dallo stesso progetto ma che ha superato Tokyo Cabinet sotto ogni aspetto, rendendola ormai una tecnologia deprecata.
+\end{warn}
+
+\noindent Tokyo Cabinet è una libreria per la gestione di database. Il sistema è basato su file contenente dei record. Un record è di fatto una coppia chiave-valore. La dimensione delle chiavi e dei valori è variabile. Non ci sono vincoli di tipizzazione nè per le chiavi nè per i valori. Non esiste di fatto il concetto di tabelle e nemmeno quello dei tipi di dato. I record sono organizzati tramite l'utilizzo di tabelle Hash, B+ tree o array di dimensione statica.
+
+\centeredImage{img/tokyo\_cabinet\_logo.png}{Logo di Tokyo Cabinet\cite{TokyoCab61:online}}{0.2}
+
+\noindent Tokyo Cabinet è stata sviluppato come successore di GDBM and QDBM con il fine di apportare i migliramenti che vengono ora elencati:
+\begin{itemize}
+	\item \textbf{migliorare l'efficienza nell'utilizzo dello spazio}: file più piccoli permettono una maggior capacità di memorizzazione;
+	\item \textbf{migliorare l'efficienza del tempo}: più velocità nel recupero e nella scrittura dei dati;
+	\item \textbf{miglioramento del parallelismo}: performance più elevate in ambienti che permettono il multi-threading;
+	\item \textbf{miglioramento dell'usabilità}: grazie ad API più semplici;
+	\item \textbf{miglioramento della robustezza}: meccanismi di protezione che impediscono la corruzione di un file, anche in caso di situazioni catastrofiche;
+	\item \textbf{supporto all'architettura a 64 bit}: permette maggiore spazio e velocità, quindi un incremento delle performance generali.
+\end{itemize}
+
+\noindent Tokyo Cabinet è scritto in C e fornisce API per i linguaggi C, Perl, Ruby, Java e Lua.
+La libreria può essere utilizzata in un qualsiasi ambiente conforme all'utilizzo di C99 e POSIX. Tokyo Cabinet è un software gratuito, licenziato sotto la GNU Lesser General Public License\cite{TokyoCab61:online}.
 \subsection{Subsystem Components}
 I quattro componenti utilizzati da NELL hanno tutti come obiettivo comune l'identificazione di nuovi fatti candidati. Ogni componente però utilizza tecniche differenti. In questo modo è possibile aumentare l'accuratezza dei risultati. I Subsystem Components sono:
 \subsubsection{Coupled Pattern Learner (CPL)}
@@ -32,7 +58,6 @@ while(true) {
 \end{minted}
 \end{code}
 
-
 \subsubsection{Coupled SEAL (CSEAL)}
 Si tratta di un componente che interroga Internet avendo a disposizione come punto di partenza  un insieme di credenze. Per ogni categoria o relazione di interesse, CSEAL crea strutture dati (liste e tabelle) da cui estrapola informazioni per trovare nuove istanze del predicato corrispondente. CSEAL è stato configurato per eseguire 5 query per ogni categoria e 10 query per ogni relazione, utilizzando 50 pagine web diverse per ogni query.
 Le probabilità di ogni fatto candidato estratto da questo componente vengono calcolate utilizzando la stessa formula di CPL dove $c$ è il numero di "wrapper" che hanno individuato l'istanza \cite{TowardAnArchitecture:online}.
@@ -61,7 +86,7 @@ I fatti candidati vengono promossi a credenze se:
 	\item una singola sorgente propone un fatto che supera un certo livello di confidenza hardcoded (probabilità a posteriori $> 0.9$).
 	\item più sorgenti propongono lo stesso fatto anche se non superano il livello di confidenza necessario per le fonti singole.
 \end{itemize}
-Il KI sgrutta le relazioni tra i predicati e rispetta le informazioni relative alla mutua esclusione ed al type checking. Per esempio categorie candidate non vengono promosse se ci sono conflitti particolari con altre istanze già presenti all'interno della KB.
+Il KI sfrutta le relazioni tra i predicati e rispetta le informazioni relative alla mutua esclusione ed al type checking. Per esempio categorie candidate non vengono promosse se ci sono conflitti particolari con altre istanze già presenti all'interno della KB.
 Le relazioni candidate non vengono promosse se alcuni vincoli di categoria degli argomenti non vengono rispettati.
 
 \noindent Nell'implementazione corrente, una volta che un fatto candidato viene promosso a credenza, non può essere declassato. Il KI è configurato per promuovere fino a 250 istanza per ogni predicato in ogni iterazione, ma raramente questa soglia è stata raggiunta.
