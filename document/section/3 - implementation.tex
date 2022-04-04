@@ -1,0 +1,33 @@
+\section{Implementazione}
+\label{impl}
+\subsection{Subsystem Components}
+I quattro componenti utilizzati da NELL hanno tutti come obiettivo comune l'identificazione di nuovi fatti candidati. Ogni componente però utilizza tecniche differenti. In questo modo è possibile aumentare l'accuratezza dei risultati. I Subsystem Components sono:
+\begin{itemize}
+	\item \textbf{Coupled Pattern Learner (CPL)}: Un componente che si occupa di estrazione del testo, utilizzando pattern testuali come "maggiore di X" o "X gioca in Y" per estrarre istanze di categorie e relazioni. Utilizza un algoritmo di Machine Learning che accoppia il learning semi-supervisionato di categorie e relazioni. Approcci più tradizionali non riescono a classificare in modo efficace i dati quando la differenza di cardinalità tra dati etichettati e non etichettati è elevata.
+	CPL utilizza statistiche di occorrenza tra i sostantivi e alcuni pattern (grazie al PoS tagging) per imparare pattern di estrazione per ogni predicato di interesse. Vengono poi utilizzati gli stessi pattern per trovare nuovi predicati.
+	Anche l'utilizzo di relazioni tra i predicati vengono utilizzate per una migliore valutazione complessiva.
+	Le probabilità di ogni fatto candidato estratto da questo componente vengono calcolate utilizzando la formula $1 - 0.5^{c}$ dove $c$ è il numero di pattern che hanno estratto il candidato.
+	\begin{info}[PoS tagging]
+		Il Part of Speech Tagging, anche chiamato tagging grammaticale, è il processo di marcatura ed etichettatura di una parola in un testo come corrispondente a una parte particolare del discorso, basata sia sulla sua definizione che sul suo contesto\cite{POStagsa85:online}.
+	\end{info}
+\begin{code}
+\captionof{listing}{Descrizione dell'algoritmo CPL \cite{Coupledp1:online}}
+\begin{minted}{java}
+// Input: An ontology O, and a text corpus C 
+// Output: Trusted instances/patterns for each predicate
+while(true) {
+	for(Predicate p : Ontology o) {
+		/*
+		1) EXTRACT candidate instances/contextual patterns 
+		using recently promoted patterns/instances;
+		2) FILTER candidates that violate coupling;
+		3) RANK candidate instances/patterns;
+		4) PROMOTE top candidates;
+		*/
+	}
+}
+\end{minted}
+\end{code}
+\end{itemize}
+
+\newpage
