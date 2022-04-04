@@ -19,7 +19,7 @@ I dati che sono stati forniti a NELL alla sua prima computazione sono stati i se
 
 \subsection{Architettura}
 L'Architettura di NELL si basa su una knowledge base condivisa ed utilizzata da diversi componenti denominati \textit{Subsystem Components} che vi effettuano sopra operazioni di lettura e scrittura. 
-\centeredImage{img/architecture.png}{Architettura di NELL\cite{TowardAnArchitecture:online}}{0.6}
+\centeredImage{img/architecture.png}{Architettura di NELL\cite{TowardAnArchitecture:online}}{0.7}
 
 I componenti presenti sono i seguenti:
 \begin{itemize}
@@ -35,7 +35,7 @@ I componenti presenti sono i seguenti:
 
 \noindent Non fanno parte del sistema anche se vengono utilizzati i \textbf{Data Resources} ovvero dei dati esterni utilizzati dai componenti per proporre nuovi fatti candidati. Per ogni iterazione che effettua il sistema, ogni componente termina la sua esecuzione usando la knowledge base di quel determinato periodo temporale, dopodiché il KI effettua le decisioni su quale fatto candidato promuovere a credenza.
 
-\centeredImage{img/state.png}{Diagramma degli stati - Iterazioni}{0.6}
+\centeredImage{img/state.png}{Diagramma degli stati - Iterazioni}{0.8}
 
 \noindent La knowledge base cresce iterazione dopo iterazione, e le nuove credenze generate vengono poi utilizzare dai componenti per effettuare un nuovo processo di training. Questo approccio è molto simile all'algoritmo di expectation–maximization (EM) in cui:
 \begin{itemize}
