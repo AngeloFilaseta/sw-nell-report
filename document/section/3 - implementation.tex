@@ -3,7 +3,53 @@
 \subsection{Knowledge Base (KB)}
 La Knowledge Base in NELL è una re-implementazione di THEO basata su Tokyo Cabinet. La Knowledge Base riesce a gestire milioni di valori su una singola macchina mantenendo le performance costanti prima di aver necessità di scalare\cite{TowardAnArchitecture:online}.
 \subsubsection{THEO}
-\cite{theofram80:online}
+\paragraph{Principi}
+I principi architetturali di THEO possono essere raccolti su due livelli, funzionale e strutturale. Si possono vedere questi principi anche come dei requisiti che la struttura deve possedere.
+
+\noindent In termini funzionali l'architettura deve permettere una vasta gamma di possibili rappresentazioni, massimizzando:
+\begin{itemize}
+	\item la gamma delle credenze rappresentabili;
+	\item la gamma delle domande che è possibile formulare date le credenze;
+	\item la gamma delle inferenze che possono essere rappresentate;
+	\item la gamma di conoscenze che è possibile apprendere;
+\end{itemize}
+
+In termini strutturali, i dati devono essere strutturati in modo preciso e seguire le convenzioni prestabilite, in modo da poter rendere possibili meccanismi come l'inferenza, l'apprendimento, il recupero di una certa informazione data un'interrogazione etc.
+
+\paragraph{Organizzazione}
+Seguono i principi organizzativi per quanto riguarda la strutturazione dei dati i THEO:
+
+\begin{itemize}
+	\item Ogni credenza è un'asserzione nella forma $(<entity><slot>) = <value>$. Questa asserzione indica il fatto che una certa entità denominata $<entity>$ ha un certo tipo di relazione denominata $<slot>$ con un'altra entità denominata $<value>$. Un esempio di istanza è per esempio $({\textrm{fred}\;\textrm{wife}) = \textrm{velma}}$.
+	\item Ogni istanza di un problema in THEO è una coppia nella forma $<entity> <slot>$. Questa coppia rappresenta un task per cui è possibile trovare soluzioni nella forma $(<entity><slot>) = <value>$. Per esempio ponendo il problema $(\textrm{fred}\;\textrm{wife})$ una possibile soluzione è appunto la tripla descritta al punto precedente, dove $<value>$ è velma.
+	\begin{info}
+		Questo meccanismo è praticamente lo stesso della programmazione logica. Prendendo per esempio come linguaggio di riferimento Prolog è possibile memorizzare i fatti di interesse come segue:
+		\begin{code}
+			\captionof{listing}{Credenze THEO espresse in Prolog}
+			\begin{minted}{prolog}
+fred.
+velma.
+wife(fred, velma).
+			\end{minted}
+		\end{code}
+Ed è possibile esprimere l'interrogazione nel seguente modo:
+		\begin{code}
+	\captionof{listing}{Credenze THEO espresse in Prolog}
+	\begin{minted}{prolog}
+wife(fred, X). % 1 solution -> X = velma [wife(fred, velma)]
+	\end{minted}
+\end{code}
+In questo caso troviamo tutte le entità legate dalla relazione wife a fred.
+	\end{info} 
+\item Classi di problemi possono essere descritti in due modi differenti:
+\begin{itemize}
+	\item da un singolo token $<slot>$. In questo caso sono rappresentati tutti i problemi nella forma $(?x\;<slot>)$ dove $?x$ è un qualsiasi membro del dominio $<slot>$. Se per esempio $(\textrm{slot}\; \textrm{domain}) = \textrm{male}$ allora $?x$ può essere una qualunque entità con dominio "male".
+	\item da una coppia del tipo $(<entity><slot>)$. In questo caso ci troviamo in un sottoinsieme del caso precedente, in cui viene specificato il dominio di $<entity>$.
+\end{itemize}
+\item Istanze di problemi e classi di problemi sono a loro volta entità. THEO in questo modo può avere credenze riguardo problemi, e permettere di porvi problemi sopra. Per esempio, nella seguente asserzione  $((\textrm{fred}\; \textrm{wife}) \textrm{difficult?}) = \textrm{no}$, "$(\textrm{fred}\; \textrm{wife})$" è $<entity>$, "$\textrm{difficult?}$" è $<slot>$ mentre "$\textrm{no}$" è $<value>$. In questo caso siamo riusciti a descrivere un problema, specificando che trovare una soluzione non è difficile.
+\item THEO memorizza tutta la conoscenza riguardante potenziali metodi per la risoluzione di problemi come delle credenze riguardanti la specifica classe di problemi. Per esempio, l'asserzione $((\textrm{fred}\;\textrm{wife}) available.mathods) = (\textrm{inherits}\;\textrm{default.value)}$ specifica che i metodi disponibili per risolvere il problema "$(\textrm{fred}\; \textrm{wife})$" sono "$\textrm{inherits}$" e $\textrm{default.value}$.
+\item Una volta che un problema viene risolto, THEO può memorizzare la soluzione indicizzata utilizzando il nome del problema stesso. Quando la credenza viene aggiunta viene anche memorizzata una spiegazione che giustifica la nuova asserzione in termini delle credenze da cui dipende. THEO è in grado di rimuovere le credenze che sono dipendenti da altre credenze che vengono eliminate o modificate, in modo da mantenere consistente la base di dati\cite{theofram80:online}.
+\end{itemize}
 \subsubsection{Tokyo Cabinet}
 
 \begin{warn}
