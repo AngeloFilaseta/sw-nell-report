@@ -48,9 +48,21 @@ Si tratta di un modello di regressione dove la variabile dipendente è dicotomic
 	Il problema che si vuole risolvere è quello dell'overfitting.\newline Anche chiamata Ridge Regression, la regolarizzazione L2 è analoga alla L1, con la differenza che si utilizza la somma dei quadrati dei pesi, invece della sola somma \cite{DeepLear11:online}.
 \end{info}
 
-\subsection{Rule Learner}
+\subsubsection{Rule Learner}
 Un algoritmo di apprendimento relazionale di primo ordine molto simile a FOIL. Lo scopo dell'algoritmo è imparare regole che vengono poi utilizzate per acquisire tramite inferenza nuove istanze di relazioni a partire da quelle già presenti nella Knowledge Base.
 \begin{info}[FOIL]
 	Un sistema di apprendimento di primo ordine che usa informazioni organizzate in una collezione di relazioni per costruire teorie espresse attraverso il linguaggio logico Prolog\cite{Inductio61:online}.
 \end{info}
+
+\subsection{Knowledge Integrator (KI)}
+L'implementazione del Knowledge Integrator è molto semplice. Il componente promuove i fatti candidati a credenza in base alla probabilità che il fatto sia accurato. Questo valore è fornito direttamente dai Subsystem Component. Il KI non ha quindi bisogno di ulteriore computazione per estrapolare i valori.
+I fatti candidati vengono promossi a credenze se:
+\begin{itemize}
+	\item una singola sorgente propone un fatto che supera un certo livello di confidenza hardcoded (probabilità a posteriori $> 0.9$).
+	\item più sorgenti propongono lo stesso fatto anche se non superano il livello di confidenza necessario per le fonti singole.
+\end{itemize}
+Il KI sgrutta le relazioni tra i predicati e rispetta le informazioni relative alla mutua esclusione ed al type checking. Per esempio categorie candidate non vengono promosse se ci sono conflitti particolari con altre istanze già presenti all'interno della KB.
+Le relazioni candidate non vengono promosse se alcuni vincoli di categoria degli argomenti non vengono rispettati.
+
+\noindent Nell'implementazione corrente, una volta che un fatto candidato viene promosso a credenza, non può essere declassato. Il KI è configurato per promuovere fino a 250 istanza per ogni predicato in ogni iterazione, ma raramente questa soglia è stata raggiunta.
 \newpage
