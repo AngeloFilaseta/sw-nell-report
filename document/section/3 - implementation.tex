@@ -3,7 +3,7 @@
 \subsection{Knowledge Base (KB)}
 La Knowledge Base in NELL è una re-implementazione di THEO basata su Tokyo Cabinet. La Knowledge Base riesce a gestire milioni di valori su una singola macchina mantenendo le performance costanti prima di aver necessità di scalare\cite{TowardAnArchitecture:online}.
 \subsubsection{THEO}
-THEO è un framework nato per imparare a risolvere problemi. 
+THEO è un framework nato per imparare a risolvere problemi attraverso un approccio che richiama principi di programmazione logica. 
 \paragraph{Principi}
 I principi architetturali di THEO possono essere raccolti su due livelli, funzionale e strutturale. Si possono vedere questi principi anche come dei requisiti che la struttura deve possedere.
 
@@ -15,16 +15,16 @@ I principi architetturali di THEO possono essere raccolti su due livelli, funzio
 	\item la gamma di conoscenze che è possibile apprendere;
 \end{itemize}
 
-In termini strutturali, i dati devono essere strutturati in modo preciso e seguire le convenzioni prestabilite, in modo da poter rendere possibili meccanismi come l'inferenza, l'apprendimento, il recupero di una certa informazione data un'interrogazione etc.
+\noindent In termini strutturali, i dati devono essere strutturati in modo preciso e seguire le convenzioni prestabilite, in modo da poter rendere possibili meccanismi come l'inferenza, l'apprendimento, il recupero di una certa informazione data un'interrogazione etc.
 
 \paragraph{Organizzazione}
-Seguono i principi organizzativi per quanto riguarda la strutturazione dei dati i THEO:
+Seguono i principi organizzativi per quanto riguarda la strutturazione dei dati in THEO:
 
 \begin{itemize}
 	\item Ogni credenza è un'asserzione nella forma $(<entity><slot>) = <value>$. Questa asserzione indica il fatto che una certa entità denominata $<entity>$ ha un certo tipo di relazione denominata $<slot>$ con un'altra entità denominata $<value>$. Un esempio di istanza è per esempio $({\textrm{fred}\;\textrm{wife}) = \textrm{velma}}$.
-	\item Ogni istanza di un problema in THEO è una coppia nella forma $<entity> <slot>$. Questa coppia rappresenta un task per cui è possibile trovare soluzioni nella forma $(<entity><slot>) = <value>$. Per esempio ponendo il problema $(\textrm{fred}\;\textrm{wife})$ una possibile soluzione è appunto la tripla descritta al punto precedente, dove $<value>$ è velma.
-	\begin{info}
-		Questo meccanismo è praticamente lo stesso della programmazione logica. Prendendo per esempio come linguaggio di riferimento Prolog è possibile memorizzare i fatti di interesse come segue:
+	\item Ogni istanza di un problema (nome utilizzato dal framework per indicare le interrogazioni) in THEO è una coppia nella forma $<entity> <slot>$. Questa coppia rappresenta un task per cui è possibile trovare soluzioni nella forma $(<entity><slot>) = <value>$. Per esempio ponendo il problema $(\textrm{fred}\;\textrm{wife})$ una possibile soluzione è appunto la tripla descritta al punto precedente, dove $<value>$ è velma.
+	\begin{info}[Parallelismo con LP]
+		Questo meccanismo è replicabile attraverso programmazione logica. Prendendo per esempio come linguaggio di riferimento Prolog è possibile memorizzare i fatti di interesse come segue:
 		\begin{code}
 			\captionof{listing}{Credenze THEO espresse in Prolog}
 			\begin{minted}{prolog}
@@ -44,24 +44,25 @@ In questo caso troviamo tutte le entità legate dalla relazione wife a fred.
 	\end{info} 
 \item Classi di problemi possono essere descritti in due modi differenti:
 \begin{itemize}
-	\item da un singolo token $<slot>$. In questo caso sono rappresentati tutti i problemi nella forma $(?x\;<slot>)$ dove $?x$ è un qualsiasi membro del dominio $<slot>$. Se per esempio $(\textrm{slot}\; \textrm{domain}) = \textrm{male}$ allora $?x$ può essere una qualunque entità con dominio "male".
-	\item da una coppia del tipo $(<entity><slot>)$. In questo caso ci troviamo in un sottoinsieme del caso precedente, in cui viene specificato il dominio di $<entity>$.
+	\item \textbf{da un singolo token $<slot>$}:\newline
+	In questo caso sono rappresentati tutti i problemi nella forma $(?x\;<slot>)$ dove $?x$ è un qualsiasi membro del dominio $<slot>$. Se per esempio $(\textrm{slot}\; \textrm{domain}) = \textrm{male}$ allora $?x$ può essere una qualunque entità con dominio "male".
+	\item \textbf{da una coppia del tipo $(<entity><slot>)$}:\newline In questo caso ci troviamo in un sottoinsieme del caso precedente, in cui viene specificato il dominio di $<entity>$.
 \end{itemize}
-\item Istanze di problemi e classi di problemi sono a loro volta entità. THEO in questo modo può avere credenze riguardo problemi, e permettere di porvi problemi sopra. Per esempio, nella seguente asserzione  $((\textrm{fred}\; \textrm{wife}) \textrm{difficult?}) = \textrm{no}$, "$(\textrm{fred}\; \textrm{wife})$" è $<entity>$, "$\textrm{difficult?}$" è $<slot>$ mentre "$\textrm{no}$" è $<value>$. In questo caso siamo riusciti a descrivere un problema, specificando che trovare una soluzione non è difficile.
-\item THEO memorizza tutta la conoscenza riguardante potenziali metodi per la risoluzione di problemi come delle credenze riguardanti la specifica classe di problemi. Per esempio, l'asserzione $((\textrm{fred}\;\textrm{wife}) available.mathods) = (\textrm{inherits}\;\textrm{default.value)}$ specifica che i metodi disponibili per risolvere il problema "$(\textrm{fred}\; \textrm{wife})$" sono "$\textrm{inherits}$" e $\textrm{default.value}$.
-\item Una volta che un problema viene risolto, THEO può memorizzare la soluzione indicizzata utilizzando il nome del problema stesso. Quando la credenza viene aggiunta viene anche memorizzata una spiegazione che giustifica la nuova asserzione in termini delle credenze da cui dipende. THEO è in grado di rimuovere le credenze che sono dipendenti da altre credenze che vengono eliminate o modificate, in modo da mantenere consistente la base di dati\cite{theofram80:online}.
+\item Istanze di problemi e classi di problemi sono a loro volta entità. THEO in questo modo può esprimere credenze riguardo problemi, e permettere di porvi problemi sopra. Per esempio, nella seguente asserzione  $((\textrm{fred}\; \textrm{wife}) \textrm{difficult?}) = \textrm{no}$, "$(\textrm{fred}\; \textrm{wife})$" è $<entity>$, "$\textrm{difficult?}$" è $<slot>$ mentre "$\textrm{no}$" è $<value>$. In questo caso siamo riusciti a descrivere un problema, specificando che trovare una soluzione non è difficile.
+\item THEO memorizza tutta la conoscenza riguardante potenziali metodi per la risoluzione di problemi come delle credenze riguardanti la specifica classe di problemi. Per esempio, l'asserzione $((\textrm{fred}\;\textrm{wife})\;\; \textrm{available.methods}) = (\textrm{inherits}\;\;\textrm{default.value)}$ specifica che i metodi disponibili per risolvere il problema "$(\textrm{fred}\; \textrm{wife})$" sono "$\textrm{inherits}$" e "$\textrm{default.value}$".
+\item Una volta che un problema viene risolto, THEO può memorizzare la soluzione, che viene indicizzata utilizzando il nome del problema stesso. Quando la credenza viene aggiunta viene anche memorizzata una spiegazione che giustifica la nuova asserzione in termini delle credenze da cui dipende. THEO è in grado di rimuovere le credenze che sono dipendenti da altre credenze quando vengono eliminate o modificate, in modo da mantenere consistente la base di dati\cite{theofram80:online}.
 \end{itemize}
 \subsubsection{Tokyo Cabinet}
 
 \begin{warn}
-	Tokyo Cabinet è ormai abbastanza datata. Nel frattempo è stata distributa Tkrzw, una libreria nata dallo stesso progetto ma che ha superato Tokyo Cabinet sotto ogni aspetto, rendendola ormai una tecnologia deprecata.
+	Tokyo Cabinet è una libreria abbastanza datata. Nel frattempo è stata distributa Tkrzw, nata dallo stesso progetto ma che ha superato Tokyo Cabinet sotto ogni aspetto, rendendola ormai una tecnologia deprecata.
 \end{warn}
 
-\noindent Tokyo Cabinet è una libreria per la gestione di database. Il sistema è basato su file contenente dei record. Un record è di fatto una coppia chiave-valore. La dimensione delle chiavi e dei valori è variabile. Non ci sono vincoli di tipizzazione nè per le chiavi nè per i valori. Non esiste di fatto il concetto di tabelle e nemmeno quello dei tipi di dato. I record sono organizzati tramite l'utilizzo di tabelle Hash, B+ tree o array di dimensione statica.
+\noindent Tokyo Cabinet è una libreria per la gestione di database. Il sistema è basato su file contenenti dei record. Un record è di fatto una coppia chiave-valore. La dimensione delle chiavi e dei valori è variabile. Non ci sono vincoli di tipizzazione nè per le chiavi nè per i valori. Non esiste di fatto il concetto di tabelle e nemmeno quello dei tipi di dato. I record sono organizzati tramite l'utilizzo di tabelle Hash, B+ tree o array di dimensione statica.
 
 \centeredImage{img/tokyo\_cabinet\_logo.png}{Logo di Tokyo Cabinet\cite{TokyoCab61:online}}{0.2}
 
-\noindent Tokyo Cabinet è stata sviluppato come successore di GDBM and QDBM con il fine di apportare i migliramenti che vengono ora elencati:
+\noindent Tokyo Cabinet è stata sviluppato come successore di GDBM e QDBM con il fine di apportare i miglioramenti che vengono ora elencati:
 \begin{itemize}
 	\item \textbf{migliorare l'efficienza nell'utilizzo dello spazio}: file più piccoli permettono una maggior capacità di memorizzazione;
 	\item \textbf{migliorare l'efficienza del tempo}: più velocità nel recupero e nella scrittura dei dati;
@@ -76,7 +77,7 @@ La libreria può essere utilizzata in un qualsiasi ambiente conforme all'utilizz
 \subsection{Subsystem Components}
 I quattro componenti utilizzati da NELL hanno tutti come obiettivo comune l'identificazione di nuovi fatti candidati. Ogni componente però utilizza tecniche differenti. In questo modo è possibile aumentare l'accuratezza dei risultati. I Subsystem Components sono:
 \subsubsection{Coupled Pattern Learner (CPL)}
-Si tratta di un componente che si occupa di estrazione del testo, utilizzando pattern testuali come "maggiore di X" o "X gioca in Y" per estrarre istanze di categorie e relazioni. Utilizza un algoritmo di Machine Learning che accoppia il learning semi-supervisionato di categorie e relazioni. Approcci più tradizionali non riescono a classificare in modo efficace i dati quando la differenza di cardinalità tra dati etichettati e non etichettati è elevata.
+Si tratta di un componente che si occupa di estrazione del testo, utilizzando pattern testuali come \textit{"maggiore di X"} o \textit{"X gioca in Y"} per estrarre istanze di categorie e relazioni. Utilizza un algoritmo di Machine Learning che accoppia il learning semi-supervisionato di categorie e relazioni. Approcci più tradizionali non riescono a classificare in modo efficace i dati quando la differenza di cardinalità tra dati etichettati e non etichettati è elevata.
 
 \noindent CPL utilizza statistiche di occorrenza tra i sostantivi e alcuni pattern (grazie al PoS tagging) per imparare pattern di estrazione per ogni predicato di interesse. Vengono poi utilizzati gli stessi pattern per trovare nuovi predicati.
 Anche l'utilizzo di relazioni tra i predicati vengono utilizzate per una migliore valutazione complessiva.
@@ -114,7 +115,7 @@ CMC esamina anche fatti candidati proposti dagli altri componenti, e riesce a cl
 \begin{info}[Regressione logistica]
 Si tratta di un modello di regressione dove la variabile dipendente è dicotomica, ossia una variabile che può avere come unici valori 0 e 1 o riconducibili ad essi. Sostanzialmente il modello calcola la probabilità che questa variabile acquisisca valore 1 \cite{Modellol35:online}.
 \end{info}
-\centeredImage{img/logistic.png}{Esempio di funzione del modello logistico \cite{Modellol35:online}}{0.2}
+\centeredImage{img/logistic.png}{Esempio di funzione del modello logistico \cite{Modellol35:online}}{0.3}
 
 \begin{info}[Regolarizzazione L2]
 	Il problema che si vuole risolvere è quello dell'overfitting.\newline Anche chiamata Ridge Regression, la regolarizzazione L2 è analoga alla L1, con la differenza che si utilizza la somma dei quadrati dei pesi, invece della sola somma \cite{DeepLear11:online}.
@@ -128,7 +129,8 @@ Un algoritmo di apprendimento relazionale di primo ordine molto simile a FOIL. L
 
 \subsection{Knowledge Integrator (KI)}
 L'implementazione del Knowledge Integrator è molto semplice. Il componente promuove i fatti candidati a credenza in base alla probabilità che il fatto sia accurato. Questo valore è fornito direttamente dai Subsystem Component. Il KI non ha quindi bisogno di ulteriore computazione per estrapolare i valori.
-I fatti candidati vengono promossi a credenze se:
+
+\noindent I fatti candidati vengono promossi a credenze se:
 \begin{itemize}
 	\item una singola sorgente propone un fatto che supera un certo livello di confidenza hardcoded (probabilità a posteriori $> 0.9$).
 	\item più sorgenti propongono lo stesso fatto anche se non superano il livello di confidenza necessario per le fonti singole.
@@ -136,5 +138,7 @@ I fatti candidati vengono promossi a credenze se:
 Il KI sfrutta le relazioni tra i predicati e rispetta le informazioni relative alla mutua esclusione ed al type checking. Per esempio categorie candidate non vengono promosse se ci sono conflitti particolari con altre istanze già presenti all'interno della KB.
 Le relazioni candidate non vengono promosse se alcuni vincoli di categoria degli argomenti non vengono rispettati.
 
-\noindent Nell'implementazione corrente, una volta che un fatto candidato viene promosso a credenza, non può essere declassato. Il KI è configurato per promuovere fino a 250 istanza per ogni predicato in ogni iterazione, ma raramente questa soglia è stata raggiunta.
+\noindent Nell'implementazione corrente, una volta che un fatto candidato viene promosso a credenza, non può essere declassato. Solo la supervisione umana può rimuovere una credenza sbagliata dalla KB.
+
+\noindent Il KI è configurato per promuovere fino a 250 istanze per ogni predicato in ogni iterazione, ma raramente questa soglia è stata raggiunta.
 \newpage
